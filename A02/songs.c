@@ -17,6 +17,12 @@ struct song {
   float danceability;
 };
 
+/**
+* The function used to print out all infomation in songList
+*
+* @param songList  the struct storing all info of the songs
+* @param length  the number of items in the songList
+*/
 void print_info(struct song songList[], int length) {
   for (int i = 0; i < length; i++) {
     printf("%i) %-32sartist: %-20sduration: %02i:%02i%-15sdanceability: %.2f\n",
