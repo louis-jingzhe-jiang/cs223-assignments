@@ -13,8 +13,8 @@
 
 int main() {
   printf("Please enter a word: ");
-  char word[32];
-  char specials[4];
+  char word[32] = "";
+  char specials[4] = "";
   specials[0] = '@';
   specials[1] = '!';
   specials[2] = '#';

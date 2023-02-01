@@ -69,7 +69,7 @@ int main() {
   if (! strcmp(attribute, "artist")) { // change artist
     printf("Enter artist: ");
     char new_artist[32];
-    scanf(" %[^\n]%*c]", new_artist);
+    scanf(" %[^\n]%*c", new_artist);
     strcpy(songList[edit].artist, new_artist);
   } else if (! strcmp(attribute, "title")) { // change title
     printf("Enter title: ");
