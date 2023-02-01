@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
   printf("Please enter a word: ");
@@ -20,8 +21,9 @@ int main() {
   specials[2] = '#';
   specials[3] = '*';
   scanf(" %s", word);
+  int length = strlen(word);
   int i = 0;
-  for (i = 0; i < 32; i++) {
+  for (i = 0; i < length; i++) {
     if (word[i] > 96 && word[i] < 123) { // a lower case letter
       word[i] = specials[rand() % 4];
     }
