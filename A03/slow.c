@@ -26,6 +26,7 @@ int main() {
       ent_phrase[i * (p_len + 1) + j] = '.';
     }
   }
+  ent_phrase[ent_len] = '\0';
   printf("%s\n", ent_phrase);
   free(ent_phrase);
   return 0;
