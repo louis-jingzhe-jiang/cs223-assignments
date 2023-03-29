@@ -72,8 +72,8 @@ int main(int argc, char* argv[]) {
   int c = 0;
   for (r = 0; r < size; r++) {
     for (c = 0; c < size; c++) {
-      float xfrac = r / (float) size;
-      float yfrac = c / (float) size;
+      float xfrac = c / (float) size;
+      float yfrac = r / (float) size;
       float x0 = xmin + xfrac * (xmax - xmin);
       float y0 = ymin + yfrac * (ymax - ymin);
       float x = 0.0;
