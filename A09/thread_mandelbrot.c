@@ -42,6 +42,7 @@ struct mand_data {
   float ymax;
   int maxIterations;
   struct ppm_pixel* p;
+  pthread_t* id;
 };
 
 /**
@@ -49,6 +50,8 @@ struct mand_data {
  */
 void* thread_func(void* id) {
   struct mand_data* md = (struct mand_data*) id;
+  printf("Thread # %lu sub-image block: cols (%i, %i) to rows (%i, %i)\n",
+      *md->id, md->y_st, md->y_ed, md->x_st, md->x_ed);
   // start calculating the colors
   for (int r = md->y_st; r < md->y_ed; r++) {
     for (int c = md->x_st; c < md->x_ed; c++) {
@@ -76,6 +79,7 @@ void* thread_func(void* id) {
       }
     }
   }
+  printf("Thread # %lu finished\n", *md->id);
   return NULL;
 }
 
@@ -136,6 +140,7 @@ int main(int argc, char* argv[]) {
     md[i].ymax = ymax;
     md[i].maxIterations = maxIterations;
     md[i].p = p;
+    md[i].id = &threads[i];
     if (i % 2 == 0) {
       md[i].x_st = 0;
       md[i].x_ed = size / 2;
