@@ -83,6 +83,8 @@ pthread_mutex_t mutex1, mutex2;
  */
 void* thread_func(void* id) {
   struct thread_data* d = (struct thread_data*) id;
+  printf("Thread %lu sub-image block: cols (%i, %i) to rows (%i, %i)\n", 
+      *d->t_id, d->x_st, d->x_ed, d->y_st, d->y_ed);
   // generate mandelbrot set
   for (int r = d->y_st; r < d->y_ed; r++) {
     for (int c = d->x_st; c < d->x_ed; c++) {
@@ -188,6 +190,7 @@ void* thread_func(void* id) {
   }
   pthread_mutex_unlock(&mutex2);
   free(this_img);
+  printf("Thread %lu finished\n", *d->t_id);
   return NULL;
 }
 
