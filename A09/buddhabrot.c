@@ -163,33 +163,21 @@ void* thread_func(void* id) {
   pthread_barrier_wait(&b);
   free(this_count);
   // now go on to compute colors
-  struct ppm_pixel* this_img = malloc(sizeof(struct ppm_pixel) * d->size
-      * d->size);
   float gamma = 0.681;
   float factor = 1.0 / gamma;
   for (int r = d->y_st; r < d->y_ed; r++) {
     for (int c = d->x_st; c < d->x_ed; c++) {
       float value = 0;
       if (counts[find_index(r, c, d->size)] > 0) {
-	      value = log(counts[find_index(r, c, d->size)]) / log(maxCount);
-	      value = pow(value, factor);
+	value = log(counts[find_index(r, c, d->size)]) / log(maxCount);
+	value = pow(value, factor);
       }
       int index = find_index(r, c, d->size);
-      this_img[index].red = (int) (value * 255);
-      this_img[index].green = (int) (value * 255);
-      this_img[index].blue = (int) (value * 255);
+      image[index].red = (int) (value * 255);
+      image[index].green = (int) (value * 255);
+      image[index].blue = (int) (value * 255);
     }
   }
-  // update image
-  pthread_mutex_lock(&mutex2);
-  for (int r = 0; r < d->size; r++) {
-    for (int c = 0; c < d->size; c++) {
-      int index = find_index(r, c, d->size);
-      image[index] = this_img[index];
-    }
-  }
-  pthread_mutex_unlock(&mutex2);
-  free(this_img);
   printf("Thread %lu finished\n", *d->t_id);
   return NULL;
 }
