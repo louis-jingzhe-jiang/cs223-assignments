@@ -269,6 +269,17 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < numProcesses; i++) {
     pthread_join(threads[i], NULL);
   }
+  for (int i = 0; i < size * size; i++) {
+    if (mandelbrot[i]) {
+      image[i].red = 0;
+      image[i].green = 0;
+      image[i].blue = 0;
+    } else {
+      image[i].red = 255;
+      image[i].green = 255;
+      image[i].blue = 255;
+    }
+  }
   // end timer
   gettimeofday(&tend, NULL);
   timer = tend.tv_sec - tstart.tv_sec + (tend.tv_usec - tstart.tv_usec)
@@ -276,6 +287,7 @@ int main(int argc, char* argv[]) {
   // display time used
   printf("Computed mandelbrot set (%ix%i) in %f seconds\n",
       size, size, timer);
+  
   // generate file name
   char filename[128] = "buddhabrot-";
   char size_str[16] = "";
@@ -291,6 +303,7 @@ int main(int argc, char* argv[]) {
   // write file
   printf("Writing file: %s\n", filename);
   write_ppm(filename, image, size, size);
+  
   // freeing vars
   free(mandelbrot);
   free(image);
