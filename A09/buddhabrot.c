@@ -269,14 +269,14 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < numProcesses; i++) {
     pthread_join(threads[i], NULL);
   }
-  /*
+/*
   for (int i = 0; i < size * size; i++) {
-    printf("%i  ", counts[i]);
+    printf("%i  ", image[i].red);
     if (i % 480 == 479) {
       printf("end\n");
     }
   }
-  */
+*/
   // end timer
   gettimeofday(&tend, NULL);
   timer = tend.tv_sec - tstart.tv_sec + (tend.tv_usec - tstart.tv_usec)
