@@ -73,9 +73,9 @@ static int maxCount;
 pthread_barrier_t b;
 
 /**
- * The mutual exclusion variable
+ * The mutual exclusion variables
  */
-pthread_mutex_t mutex;
+pthread_mutex_t mutex1, mutex2;
 
 
 /**
@@ -147,7 +147,7 @@ void* thread_func(void* id) {
     }
   }
   // update max count and count
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&mutex1);
   for (int r = 0; r < d->size; r++) {
     for (int c = 0; c < d->size; c++) {
       counts[find_index(r,c,d->size)] += this_count[find_index(r,c,d->size)];
@@ -156,25 +156,38 @@ void* thread_func(void* id) {
   if (maxCount < this_max_count) {
     maxCount = this_max_count;
   }
-  pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(&mutex1);
   // wait for all threads to finish till here
   pthread_barrier_wait(&b);
+  free(this_count);
   // now go on to compute colors
+  struct ppm_pixel* this_img = malloc(sizeof(struct ppm_pixel) * (d->x_ed 
+      - d->x_st) * (d->y_ed - d->y_st));
   float gamma = 0.681;
   float factor = 1.0 / gamma;
   for (int r = d->y_st; r < d->y_ed; r++) {
     for (int c = d->x_st; c < d->x_ed; c++) {
       float value = 0;
       if (counts[find_index(r, c, d->size)] > 0) {
-	value = log(counts[find_index(r, c, d->size)]) / log(maxCount);
-	value = pow(value, factor);
+	      value = log(counts[find_index(r, c, d->size)]) / log(maxCount);
+	      value = pow(value, factor);
       }
-      image[find_index(r,c,d->size)].red = (unsigned char) ((int) value * 255);
-      image[find_index(r,c,d->size)].green = (unsigned char)((int)value * 255);
-      image[find_index(r,c,d->size)].blue = (unsigned char)((int) value * 255);
+      int index = find_index(r - d->y_st, c - d->x_st, d->x_ed - d->x_st);
+      this_img[index].red = (unsigned char) ((int) value * 255);
+      this_img[index].green = (unsigned char) ((int) value * 255);
+      this_img[index].blue = (unsigned char) ((int) value * 255);
     }
   }
-  free(this_count);
+  // update image
+  pthread_mutex_lock(&mutex2);
+  for (int r = 0; r < d->y_ed - d->y_st; r++) {
+    for (int c = 0; c < d->x_ed - d->x_st; c++) {
+      int index = d->y_st * d->size + d->x_st + r * d->size + c;
+      image[index] = this_img[find_index(r, c, d->x_ed - d->x_st)];
+    }
+  }
+  pthread_mutex_unlock(&mutex2);
+  free(this_img);
   return NULL;
 }
 
@@ -222,7 +235,8 @@ int main(int argc, char* argv[]) {
   // spliting threads
   pthread_t* threads = malloc(sizeof(pthread_t) * numProcesses);
   struct thread_data* d = malloc(sizeof(struct thread_data) * numProcesses);
-  pthread_mutex_init(&mutex, NULL);
+  pthread_mutex_init(&mutex1, NULL);
+  pthread_mutex_init(&mutex2, NULL);
   pthread_barrier_init(&b, NULL, 4);
   for (int i = 0; i < numProcesses; i++) {
     d[i].size = size;
