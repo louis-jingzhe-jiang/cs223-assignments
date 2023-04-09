@@ -123,16 +123,16 @@ void* thread_func(void* id) {
       }
       float xfrac = c / (float) d->size;
       float yfrac = r / (float) d->size;
-      float x0 = d->xmin + xfrac * (d->xmax + d->xmin);
-      float y0 = d->ymin + yfrac * (d->ymax + d->ymin);
+      float x0 = d->xmin + xfrac * (d->xmax - d->xmin);
+      float y0 = d->ymin + yfrac * (d->ymax - d->ymin);
       float x = 0;
       float y = 0;
       while (x * x + y * y < 2 * 2) {
 	float xtmp = x * x - y * y + x0;
 	y = 2 * x * y + y0;
 	x = xtmp;
-	int yrow = round(d->size * (y - d->ymin) / (d->ymax - d->ymin));
-	int xcol = round(d->size * (x - d->xmin) / (d->xmax - d->xmin));
+	int yrow = (int) (d->size * (y - d->ymin) / (d->ymax - d->ymin));
+	int xcol = (int) (d->size * (x - d->xmin) / (d->xmax - d->xmin));
 	if (yrow < 0 || yrow >= d->size) { // out of range
 	  continue;
 	}
@@ -268,17 +268,6 @@ int main(int argc, char* argv[]) {
   // merging threads
   for (int i = 0; i < numProcesses; i++) {
     pthread_join(threads[i], NULL);
-  }
-  for (int i = 0; i < size * size; i++) {
-    if (mandelbrot[i]) {
-      image[i].red = 0;
-      image[i].green = 0;
-      image[i].blue = 0;
-    } else {
-      image[i].red = 255;
-      image[i].green = 255;
-      image[i].blue = 255;
-    }
   }
   // end timer
   gettimeofday(&tend, NULL);
