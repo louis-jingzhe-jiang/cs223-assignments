@@ -163,8 +163,8 @@ void* thread_func(void* id) {
   pthread_barrier_wait(&b);
   free(this_count);
   // now go on to compute colors
-  struct ppm_pixel* this_img = malloc(sizeof(struct ppm_pixel) * (d->x_ed 
-      - d->x_st) * (d->y_ed - d->y_st));
+  struct ppm_pixel* this_img = malloc(sizeof(struct ppm_pixel) * d->size
+      * d->size);
   float gamma = 0.681;
   float factor = 1.0 / gamma;
   for (int r = d->y_st; r < d->y_ed; r++) {
@@ -174,7 +174,7 @@ void* thread_func(void* id) {
 	      value = log(counts[find_index(r, c, d->size)]) / log(maxCount);
 	      value = pow(value, factor);
       }
-      int index = find_index(r - d->y_st, c - d->x_st, d->x_ed - d->x_st);
+      int index = find_index(r, c, d->size);
       this_img[index].red = (unsigned char) ((int) value * 255);
       this_img[index].green = (unsigned char) ((int) value * 255);
       this_img[index].blue = (unsigned char) ((int) value * 255);
@@ -182,10 +182,10 @@ void* thread_func(void* id) {
   }
   // update image
   pthread_mutex_lock(&mutex2);
-  for (int r = 0; r < d->y_ed - d->y_st; r++) {
-    for (int c = 0; c < d->x_ed - d->x_st; c++) {
-      int index = d->y_st * d->size + d->x_st + r * d->size + c;
-      image[index] = this_img[find_index(r, c, d->x_ed - d->x_st)];
+  for (int r = 0; r < d->size; r++) {
+    for (int c = 0; c < d->size; c++) {
+      int index = find_index(r, c, d->size);
+      image[index] = this_img[index];
     }
   }
   pthread_mutex_unlock(&mutex2);
@@ -269,6 +269,14 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < numProcesses; i++) {
     pthread_join(threads[i], NULL);
   }
+  /*
+  for (int i = 0; i < size * size; i++) {
+    printf("%i  ", counts[i]);
+    if (i % 480 == 479) {
+      printf("end\n");
+    }
+  }
+  */
   // end timer
   gettimeofday(&tend, NULL);
   timer = tend.tv_sec - tstart.tv_sec + (tend.tv_usec - tstart.tv_usec)
@@ -292,7 +300,7 @@ int main(int argc, char* argv[]) {
   // write file
   printf("Writing file: %s\n", filename);
   write_ppm(filename, image, size, size);
-  
+
   // freeing vars
   free(mandelbrot);
   free(image);
