@@ -175,9 +175,9 @@ void* thread_func(void* id) {
 	      value = pow(value, factor);
       }
       int index = find_index(r, c, d->size);
-      this_img[index].red = (unsigned char) ((int) value * 255);
-      this_img[index].green = (unsigned char) ((int) value * 255);
-      this_img[index].blue = (unsigned char) ((int) value * 255);
+      this_img[index].red = (int) (value * 255);
+      this_img[index].green = (int) (value * 255);
+      this_img[index].blue = (int) (value * 255);
     }
   }
   // update image
