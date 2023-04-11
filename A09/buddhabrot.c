@@ -112,6 +112,7 @@ void* thread_func(void* id) {
   }
   // compute visited counts
   int* this_count = malloc(sizeof(int) * d->size * d->size);
+  // initialize
   for (int i = 0; i < d->size * d->size; i++) {
     this_count[i] = 0;
   }
@@ -140,10 +141,10 @@ void* thread_func(void* id) {
 	  continue;
 	}
 	// increase count at (yrow, xcol)
-	this_count[find_index(r, c, d->size)]++;
+	this_count[find_index(yrow, xcol, d->size)]++;
 	// update max count
-	if (this_count[find_index(r, c, d->size)] > this_max_count) {
-	  this_max_count = this_count[find_index(r, c, d->size)];
+	if (this_count[find_index(yrow, xcol, d->size)] > this_max_count) {
+	  this_max_count = this_count[find_index(yrow, xcol, d->size)];
 	}
       }
     }
