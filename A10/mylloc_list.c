@@ -29,7 +29,7 @@ void* malloc (size_t size) {
         flist = next->next;
       }
       next->used = size;
-      return (void*) next + 1; // return the chunk
+      return (void*) (next + 1); // return the chunk
     } else { // this chunk is smaller than size
       // go to next chunk
       prev = next;
@@ -45,6 +45,7 @@ void* malloc (size_t size) {
     struct chunk* cnk = (struct chunk*) memory;
     cnk->size = size;
     cnk->used = size;
+    cnk->next = NULL;
     return (void*) (cnk + 1);
   }
 }
